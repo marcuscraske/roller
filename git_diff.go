@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
-func GitDiff(srcDir string, destDir string, color bool) string {
+func GitDiff(srcDir string, destDir string, display bool) string {
 
 	var args []string
 
@@ -13,13 +14,14 @@ func GitDiff(srcDir string, destDir string, color bool) string {
 		"diff",
 		"--no-index", "--relative", "--binary",
 		"--no-ext-diff",
-		"--src-prefix="+srcDir,
-		"--dst-prefix="+destDir,
+		"--src-prefix=old/",
+		"--dst-prefix=new/",
 		srcDir,
 		destDir)
 
-	if !color {
-		args = append(args, "--no-color")
+	if !display {
+		args = append(args,
+			"--no-color")
 	}
 
 	process := exec.Command("git", args...)
@@ -33,6 +35,13 @@ func GitDiff(srcDir string, destDir string, color bool) string {
 		HandleError(err)
 	}
 
+	// Get the string output
 	var result = string(output)
+
+	// Replace the paths in the diff, as they'll have the full paths rather than a/ and b/
+	result = strings.ReplaceAll(result, "old"+srcDir, "a")
+	result = strings.ReplaceAll(result, "new"+destDir, "b")
+	result = strings.ReplaceAll(result, "old"+destDir, "b")
+
 	return result
 }

@@ -27,10 +27,9 @@ roller [action]
 
 
 ## Files
-- `replicator.yaml` - template configuration
+- `roller.yaml` - template configuration
 
-
-## replicator.yaml
+## roller.yaml
 
 ````
 template:

@@ -8,9 +8,10 @@ import (
 
 type RollerConfig struct {
 	template struct {
-		repo   string
-		vars   map[string]string
-		ignore list.List
+		repo          string
+		vars          map[string]string
+		ignore        list.List
+		tracked_files []string
 	}
 	actions map[string]RollerAction
 }
