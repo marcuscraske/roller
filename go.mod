@@ -1,4 +1,4 @@
-module replicator
+module roller
 
 go 1.20
 

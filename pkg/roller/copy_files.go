@@ -1,16 +1,17 @@
-package main
+package roller
 
 import (
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"roller/pkg/interaction"
 )
 
-func CreateTmpDirAndCopyTrackedFiles(config RollerConfig, targetDir string, tmpDir string) string {
+func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir string) string {
 	// Create "old" tmp dir to copy files that already exist in the target dir
 	oldChangesTmpDirPath, err := os.MkdirTemp("", "roller")
-	HandleError(err)
+	interaction.HandleError(err)
 
 	fmt.Printf("Copying tracked files, oldChangesTmpDirPath=%s, tmpDir=%s, targetDir=%s\n", oldChangesTmpDirPath, tmpDir, targetDir)
 
@@ -32,27 +33,27 @@ func CreateTmpDirAndCopyTrackedFiles(config RollerConfig, targetDir string, tmpD
 		} else {
 			// Create the folder...
 			err = os.MkdirAll(oldChangesTmpDirPath, os.ModePerm)
-			HandleError(err)
+			interaction.HandleError(err)
 		}
 
 		return nil
 	})
-	HandleError(err)
+	interaction.HandleError(err)
 
 	return oldChangesTmpDirPath
 }
 
 func CopyFile(src string, dest string) {
 	srcFile, err := os.Open(src)
-	HandleError(err)
+	interaction.HandleError(err)
 	defer srcFile.Close()
 
 	newFile, err := os.Create(dest)
-	HandleError(err)
+	interaction.HandleError(err)
 	defer newFile.Close()
 
 	_, err = io.Copy(newFile, srcFile)
-	HandleError(err)
+	interaction.HandleError(err)
 
 	fmt.Printf("Copied file, src=%s, dest=%s\n", src, dest)
 }

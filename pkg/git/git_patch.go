@@ -1,8 +1,9 @@
-package main
+package git
 
 import (
 	"fmt"
 	"os/exec"
+	"roller/pkg/interaction"
 	"strings"
 )
 
@@ -24,7 +25,7 @@ func GitPatch(patch string) {
 
 	// Git diff will give 0 for no changes and 1 for changes; thus ignore exit codes 0 and 1
 	if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() > 1 {
-		HandleError(err)
+		interaction.HandleError(err)
 	}
 
 	fmt.Println("Patch applied!")

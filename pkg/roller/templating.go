@@ -1,4 +1,4 @@
-package main
+package roller
 
 func TemplatingApply(dir string) {
 	// TBC...

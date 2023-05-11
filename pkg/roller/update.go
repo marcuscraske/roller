@@ -1,15 +1,17 @@
-package main
+package roller
 
 import (
 	"errors"
 	"fmt"
 	"os"
+	"roller/pkg/git"
+	"roller/pkg/interaction"
 )
 
-func RollerUpdate(firstTime bool) {
+func Update(firstTime bool) {
 	// Get working directory as target directory
 	var targetDir, err = os.Getwd()
-	HandleError(err)
+	interaction.HandleError(err)
 
 	// Check roller config doesn't already exist in the current folder
 	_, err = os.Stat(targetDir + "/roller.yaml")
@@ -20,16 +22,16 @@ func RollerUpdate(firstTime bool) {
 
 	// Clone the repo to tmp dir / read roller config
 	var gitDir string
-	var config RollerConfig
+	var config Config
 
 	if firstTime {
 		// TODO read repo url from first param
-		gitDir = GitClone("https://github.com/marcuscraske/tmp.git")
+		gitDir = git.GitClone("https://github.com/marcuscraske/tmp.git")
 		config = ReadConfig(gitDir + "/roller.yaml")
 	} else {
 		config := ReadConfig(targetDir + "/roller.yaml")
-		gitUrl := config.template.repo
-		gitDir = GitClone(gitUrl)
+		gitUrl := config.Template.Repo
+		gitDir = git.GitClone(gitUrl)
 	}
 
 	// Copy tracked files from git clone to tmpDir
@@ -48,7 +50,7 @@ func RollerUpdate(firstTime bool) {
 	}
 
 	// Generate diff
-	diff := GitDiff(oldChangesTmpDirPath, newChangesTmpDir, true)
+	diff := git.GitDiff(oldChangesTmpDirPath, newChangesTmpDir)
 
 	fmt.Println("Changes:")
 	fmt.Println("***************************************************************")
@@ -56,10 +58,10 @@ func RollerUpdate(firstTime bool) {
 	fmt.Println("***************************************************************")
 	fmt.Println("Apply? (y/n)")
 
-	PromptYesOrExit()
+	interaction.PromptYesOrExit()
 
 	// Apply patch
-	GitPatch(diff)
+	git.GitPatch(diff)
 
 	// Update list of tracked files
 	// TODO TBC...
