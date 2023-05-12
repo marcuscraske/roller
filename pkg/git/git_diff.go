@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func GitDiff(srcDir string, destDir string) string {
+func Diff(srcDir string, destDir string) string {
 
 	var args []string
 

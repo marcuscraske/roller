@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func GitPatch(patch string) {
+func Patch(patch string) {
 	var args []string
 	args = append(args,
 		"apply", "-3",

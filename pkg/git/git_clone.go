@@ -7,8 +7,8 @@ import (
 	"roller/pkg/interaction"
 )
 
-// GitClone Clones the URL to a new tmp dir, and returns the path of the tmp dir.
-func GitClone(url string) string {
+// Clone Clones the URL to a new tmp dir, and returns the path of the tmp dir.
+func Clone(url string) string {
 	// TODO ability to handle private key
 	// Create tmp folder for clone
 	dir, err := os.MkdirTemp("", "roller")

@@ -7,22 +7,23 @@ import (
 	"roller/pkg/interaction"
 )
 
+const ConfigFileName = "roller.yaml"
+
 type Config struct {
 	Template struct {
-		Repo         string            `json:"repo"`
-		Vars         map[string]string `json:"vars"`
-		Ignore       list.List         `json:"ignore"`
-		TrackedFiles []string          `json:"tracked_files"`
+		Repo   string            `json:"repo"`
+		Vars   map[string]string `json:"vars"`
+		Ignore list.List         `json:"ignore"`
 	} `json:"template"`
 	Actions map[string]Action `json:"actions"`
 }
 
 // ReadConfig Read roller.yaml file.
-func ReadConfig(path string) Config {
+func ReadConfig(dir string) Config {
 	config := Config{}
 
 	// Read file
-	file, err := os.ReadFile(path)
+	file, err := os.ReadFile(dir + "/" + ConfigFileName)
 	interaction.HandleError(err)
 
 	// Convert to yaml
@@ -31,7 +32,11 @@ func ReadConfig(path string) Config {
 
 	// Apply enforced config
 	config.Template.Ignore.PushFront(".git")
-	config.Template.Ignore.PushFront("roller.yaml")
 
 	return config
+}
+
+func MergeConfig(newConfig Config, oldConfig Config) Config {
+	// TODO check if vars changed. if so, prompt to edit. write config either way...
+	return newConfig
 }

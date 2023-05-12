@@ -1,7 +1,12 @@
 package command
 
-import "roller/pkg/roller"
+import (
+	"os"
+	"roller/pkg/roller"
+)
 
 func CommandCreate() {
-	roller.Update(true)
+	// TODO validate URL
+	var gitUrl = os.Args[2]
+	roller.Create(gitUrl)
 }
