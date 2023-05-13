@@ -1,6 +1,11 @@
 package command
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"roller/pkg/interaction"
+	"roller/pkg/roller"
+)
 
 func CommandHelp() {
 	fmt.Println("Usage: roller COMMAND")
@@ -10,5 +15,20 @@ func CommandHelp() {
 	fmt.Println(" update")
 	fmt.Println(" version")
 	fmt.Println("")
+
+	var targetDir, err = os.Getwd()
+	interaction.HandleError(err)
+
+	var config, err2 = roller.ReadConfig(targetDir)
+	interaction.HandleError(err2)
+
+	if len(config.Actions) > 0 {
+		fmt.Println("Available custom commands:")
+		for key := range config.Actions {
+			fmt.Printf("  %s\n", key)
+		}
+		fmt.Println("")
+	}
+
 	fmt.Println("To get more help with roller, checkout TBC.")
 }

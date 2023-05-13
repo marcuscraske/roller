@@ -14,13 +14,13 @@ func TemplatingApply(dir string, config Config) {
 // ApplyTemplating Applies templating to the provided dir
 func ApplyTemplating(dir string) {
 	// Read config for vars
-	config := ReadConfig(dir)
+	config, err := ReadConfig(dir)
 
 	// Setup context
 	//context := pongo2.Context{"vars": config.template.vars}
 
 	// Iterate and apply template to each file
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		return ApplyTemplatingFile(dir, path, info, config)
 	})
 	interaction.HandleError(err)

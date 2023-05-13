@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"roller/pkg/git"
+	"roller/pkg/interaction"
 )
 
 func Create(gitUrl string) {
@@ -20,7 +21,8 @@ func Create(gitUrl string) {
 
 	// Perform the initial clone
 	var gitDir = git.Clone(gitUrl)
-	var config = ReadConfig(gitDir)
+	var config, err2 = ReadConfig(gitDir)
+	interaction.HandleError(err2)
 
 	// Do the magic!
 	Patch(true, config, gitDir, targetDir)

@@ -12,12 +12,16 @@ func Update() {
 	interaction.HandleError(err)
 
 	// Clone the repo to tmp dir, read repo from roller config
-	var config = ReadConfig(targetDir)
+	var config, err2 = ReadConfig(targetDir)
+	interaction.HandleError(err2)
+
 	var gitUrl = config.Template.Repo
 	var gitDir = git.Clone(gitUrl)
 
 	// Read the new config and merge it
-	var newConfig = ReadConfig(gitDir)
+	var newConfig, err3 = ReadConfig(gitDir)
+	interaction.HandleError(err3)
+
 	config = MergeConfig(newConfig, config)
 
 	// Do the magic!

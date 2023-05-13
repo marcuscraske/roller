@@ -9,8 +9,7 @@ func IsIgnoredFile(config Config, relativePath string) bool {
 	ignored := false
 
 	// Check whether the path matches any ignored files
-	for e := config.Template.Ignore.Front(); e != nil; e = e.Next() {
-		val := e.Value.(string)
+	for _, val := range config.Template.Ignore {
 		index := strings.Index(relativePath, val)
 		if index >= 0 {
 			ignored = true

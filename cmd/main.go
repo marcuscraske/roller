@@ -19,6 +19,9 @@ func main() {
 	case "version":
 		command.CommandVersion()
 	default:
-		command.CommandHelp()
+		var handled = command.CommandAction()
+		if !handled {
+			command.CommandHelp()
+		}
 	}
 }
