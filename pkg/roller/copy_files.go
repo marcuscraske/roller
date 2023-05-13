@@ -5,18 +5,18 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"roller/pkg/files"
 	"roller/pkg/interaction"
 )
 
 func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir string) string {
 	// Create "old" tmp dir to copy files that already exist in the target dir
-	oldChangesTmpDirPath, err := os.MkdirTemp("", "roller")
-	interaction.HandleError(err)
+	oldChangesTmpDirPath := files.CreateTmpDir()
 
 	fmt.Printf("Copying tracked files, oldChangesTmpDirPath=%s, tmpDir=%s, targetDir=%s\n", oldChangesTmpDirPath, tmpDir, targetDir)
 
 	// Copy files from targetDir that exist in tmpDir
-	err = filepath.Walk(tmpDir, func(tmpDirPath string, tmpDirInfo os.FileInfo, err error) error {
+	err := filepath.Walk(tmpDir, func(tmpDirPath string, tmpDirInfo os.FileInfo, err error) error {
 		relativePath := tmpDirPath[len(tmpDir):]
 
 		targetDirPath := targetDir + relativePath

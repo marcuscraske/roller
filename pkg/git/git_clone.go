@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-git/go-git/v5"
 	"os"
+	"roller/pkg/files"
 	"roller/pkg/interaction"
 )
 
@@ -11,12 +12,11 @@ import (
 func Clone(url string) string {
 	// TODO ability to handle private key
 	// Create tmp folder for clone
-	dir, err := os.MkdirTemp("", "roller")
-	interaction.HandleError(err)
+	dir := files.CreateTmpDir()
 
 	// Clone the repo
 	fmt.Printf("Cloning repo, tmpdir=%s, url=%s\n", dir, url)
-	_, err = git.PlainClone(dir, false, &git.CloneOptions{
+	_, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:      url,
 		Progress: os.Stdout,
 	})
