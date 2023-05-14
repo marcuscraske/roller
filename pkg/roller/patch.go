@@ -28,16 +28,28 @@ func Patch(firstTime bool, config Config, gitDir string, targetDir string) {
 	// Generate diff
 	diff := git.Diff(oldChangesTmpDirPath, newChangesTmpDir)
 
+	// Check for deleted files, append to diff
+	// TODO...
+
+	// Display the changes
 	fmt.Println("Changes:")
 	fmt.Println("***************************************************************")
 	fmt.Printf("%s\n\n", diff)
 	fmt.Println("***************************************************************")
-	fmt.Println("Apply? (y/n)")
+	fmt.Println("Apply? (y = apply, d = dump to 'patch.txt', n or anything else = abort)")
 
-	interaction.PromptYesOrExit()
+	var answer = interaction.PromptOrExit("y", "d")
 
-	// Apply patch
-	git.Patch(diff)
+	switch answer {
+	case "y":
+		// Apply patch
+		git.Patch(diff)
+	case "d":
+		// Dump patch to target dir
+		var data = []byte(diff)
+		var err = os.WriteFile(targetDir+"/patch.txt", data, 0664)
+		interaction.HandleError(err)
+	}
 
 	// Update list of tracked files
 	var trackedFiles []string
@@ -50,5 +62,6 @@ func Patch(firstTime bool, config Config, gitDir string, targetDir string) {
 	})
 	interaction.HandleError(err)
 
+	// Write tracked files to target dir's roller.yaml
 	UpdateTrackedFiles(targetDir, trackedFiles, config)
 }

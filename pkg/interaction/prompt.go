@@ -3,13 +3,22 @@ package interaction
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
-func PromptYesOrExit() {
+func PromptOrExit(acceptedParams ...string) string {
 	var answer string
 	fmt.Scanln(&answer)
-	if len(answer) == 0 || (answer != "y" && answer != "yes") {
-		fmt.Println("Expected 'y' or 'yes', aborted!")
-		os.Exit(1)
+
+	answer = strings.ToLower(answer)
+
+	for _, key := range acceptedParams {
+		if answer == key {
+			return answer
+		}
 	}
+
+	fmt.Println("Aborted!")
+	os.Exit(1)
+	return ""
 }
