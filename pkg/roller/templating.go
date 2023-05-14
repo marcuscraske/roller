@@ -27,16 +27,16 @@ func ApplyTemplating(dir string, config Config) {
 		}
 		return nil
 	})
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 }
 
 func ApplyTemplatingFile(path string, info os.FileInfo, config Config, context pongo2.Context) error {
 	// Apply templating
 	template, err := pongo2.FromFile(path)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	output, err := template.Execute(context)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	// Apply string replacement
 	for key, value := range config.Template.Replace {
@@ -46,7 +46,7 @@ func ApplyTemplatingFile(path string, info os.FileInfo, config Config, context p
 	// Write output to file
 	data := []byte(output)
 	err = os.WriteFile(path, data, info.Mode())
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	fmt.Printf("Template applied, file=%s\n", path)
 	return nil

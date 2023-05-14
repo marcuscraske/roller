@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"os/exec"
 	"roller/pkg/interaction"
 	"strings"
@@ -28,7 +29,8 @@ func Diff(srcDir string, destDir string) string {
 
 	// Git diff will give 0 for no changes and 1 for changes; thus ignore exit codes 0 and 1
 	if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() > 1 {
-		interaction.HandleError(err)
+		fmt.Printf("Running git diff failed, exitCode=%d\n", exitError.ExitCode())
+		interaction.HandleError(err, false)
 	}
 
 	// Get the string output

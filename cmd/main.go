@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"roller/pkg/command"
 	"roller/pkg/files"
@@ -12,19 +13,32 @@ func main() {
 		cmd = os.Args[1]
 	}
 
-	defer files.TmpDirCleanup()
+	defer func() {
+		files.TmpDirCleanup()
+		if err := recover(); err != nil {
+			fmt.Printf("Error occurred: %s\n", err)
+			os.Exit(1)
+		}
+	}()
 
+	var success = false
 	switch cmd {
 	case "create":
-		command.CommandCreate()
+		success = command.CommandCreate()
 	case "update":
-		command.CommandUpdate()
+		success = command.CommandUpdate()
 	case "version":
-		command.CommandVersion()
+		success = command.CommandVersion()
+	case "help":
+		success = command.CommandHelp()
 	default:
 		var handled = command.CommandAction()
 		if !handled {
 			command.CommandHelp()
 		}
+	}
+
+	if !success {
+		os.Exit(1)
 	}
 }

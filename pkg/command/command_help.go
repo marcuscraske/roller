@@ -7,7 +7,7 @@ import (
 	"roller/pkg/roller"
 )
 
-func CommandHelp() {
+func CommandHelp() bool {
 	fmt.Println("Usage: roller COMMAND")
 	fmt.Println("")
 	fmt.Println("Commands:")
@@ -17,10 +17,10 @@ func CommandHelp() {
 	fmt.Println("")
 
 	var targetDir, err = os.Getwd()
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	var config, err2 = roller.ReadConfig(targetDir)
-	interaction.HandleError(err2)
+	interaction.HandleError(err2, true)
 
 	if len(config.Actions) > 0 {
 		fmt.Println("Available custom commands:")
@@ -31,4 +31,5 @@ func CommandHelp() {
 	}
 
 	fmt.Println("To get more help with roller, checkout TBC.")
+	return true
 }

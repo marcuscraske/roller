@@ -10,7 +10,7 @@ var dirs []string
 
 func CreateTmpDir() string {
 	tmpDir, err := os.MkdirTemp("", "roller")
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 	dirs = append(dirs, tmpDir)
 	fmt.Printf("Created tmpdir=%s\n", tmpDir)
 	return tmpDir

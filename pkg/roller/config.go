@@ -22,7 +22,7 @@ type Config struct {
 func ReadConfig(dir string) (config Config, err error) {
 	// Read file
 	file, err := os.ReadFile(dir + "/" + ConfigFileName)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	// Convert to yaml
 	err = yaml.Unmarshal(file, &config)
@@ -37,9 +37,9 @@ func ReadConfig(dir string) (config Config, err error) {
 
 func WriteConfig(dir string, config Config) {
 	data, err := yaml.Marshal(config)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 	err = os.WriteFile(dir+"/"+ConfigFileName, data, 0664)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 }
 
 // MergeConfig merges template config with target config, and provides the merged config

@@ -6,23 +6,21 @@ import (
 	"os/exec"
 )
 
-func LaunchInteractiveProcess(workingDir string, name string, arg ...string) {
+func LaunchInteractiveProcess(workingDir string, name string, arg ...string) (err error) {
 	fmt.Println("Launching vim for roller.yaml...")
 	process := exec.Command(name, arg...)
 	process.Dir = workingDir
 	stdin, err := process.StdinPipe()
-	HandleError(err)
+	HandleError(err, true)
 
 	defer stdin.Close()
 	process.Stdout = os.Stdout
 	process.Stderr = os.Stderr
 
 	if err = process.Start(); err != nil {
-		HandleError(err)
+		return err
 	}
 
 	err = process.Wait()
-	if err != nil {
-		HandleError(err)
-	}
+	return err
 }

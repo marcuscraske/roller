@@ -2,25 +2,22 @@ package git
 
 import (
 	"fmt"
-	"github.com/go-git/go-git/v5"
-	"os"
 	"roller/pkg/files"
 	"roller/pkg/interaction"
 )
 
 // Clone Clones the URL to a new tmp dir, and returns the path of the tmp dir.
 func Clone(url string) string {
-	// TODO ability to handle private key
 	// Create tmp folder for clone
 	dir := files.CreateTmpDir()
 
-	// Clone the repo
+	// Clone the repo, launch it as an interactive process for auth
 	fmt.Printf("Cloning repo, tmpdir=%s, url=%s\n", dir, url)
-	_, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:      url,
-		Progress: os.Stdout,
-	})
-	interaction.HandleError(err)
+	err := interaction.LaunchInteractiveProcess(dir, "git", "clone", url, ".")
+	if err != nil {
+		fmt.Println("Failed to clone repository, aborted!")
+		interaction.HandleError(err, false)
+	}
 
 	return dir
 }

@@ -5,8 +5,8 @@ import (
 	"roller/pkg/roller"
 )
 
-func CommandCreate() {
+func CommandCreate() bool {
 	// TODO validate URL
 	var gitUrl = os.Args[2]
-	roller.Create(gitUrl)
+	return roller.Create(gitUrl)
 }

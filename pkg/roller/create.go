@@ -8,7 +8,7 @@ import (
 	"roller/pkg/interaction"
 )
 
-func Create(gitUrl string) {
+func Create(gitUrl string) bool {
 
 	var targetDir, err = os.Getwd()
 
@@ -16,14 +16,15 @@ func Create(gitUrl string) {
 	_, err = os.Stat(targetDir + "/" + ConfigFileName)
 	if !errors.Is(err, os.ErrNotExist) {
 		fmt.Println("roller.yaml detected in current directory, aborted!")
-		return
+		return false
 	}
 
 	// Perform the initial clone
 	var gitDir = git.Clone(gitUrl)
-	var config, err2 = ReadConfig(gitDir)
-	interaction.HandleError(err2)
+	config, err := ReadConfig(gitDir)
+	interaction.HandleError(err, true)
 
 	// Do the magic!
 	Patch(config, gitDir, targetDir)
+	return true
 }

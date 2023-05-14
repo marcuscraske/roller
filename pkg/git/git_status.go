@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"os/exec"
 	"roller/pkg/interaction"
 	"strings"
@@ -9,8 +10,12 @@ import (
 func Status(dir string) string {
 	// Run git status to check for the current changes
 	process := exec.Command("git", "status", "--porcelain")
+	process.Dir = dir
 	output, err := process.Output()
-	interaction.HandleError(err)
+	if err != nil {
+		fmt.Println("Running git status failed")
+		interaction.HandleError(err, false)
+	}
 
 	// Get the string output
 	var result = string(output)

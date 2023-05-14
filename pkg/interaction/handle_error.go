@@ -2,17 +2,16 @@ package interaction
 
 import (
 	"fmt"
-	"os"
+	"runtime/debug"
 )
 
 // HandleError Checks whether the error is not nil; if so, it's printed to stdout and the program exits
-func HandleError(err error) {
-	// TODO use panic(err) instead?
+func HandleError(err error, critical bool) {
 	if err != nil {
-		// Dump the error
-		fmt.Printf("Failed due to unexpected error: %s", err)
-
-		// Hard exit with error-code...
-		os.Exit(1)
+		fmt.Printf("Failed due to unexpected error: %s\n", err)
+		if critical {
+			debug.PrintStack()
+		}
+		panic(err)
 	}
 }

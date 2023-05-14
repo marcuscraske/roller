@@ -8,12 +8,12 @@ import (
 	"roller/pkg/interaction"
 )
 
-func Patch(config Config, gitDir string, targetDir string) {
+func Patch(config Config, gitDir string, targetDir string) bool {
 	// Check targetDir has no pending git changes
 	status := git.Status(targetDir)
 	if len(status) > 0 {
 		fmt.Println("Unable to proceed, git changes are pending - check git status!")
-		return
+		return false
 	}
 
 	// Copy tracked files from git clone to newChangesTmpDir
@@ -42,7 +42,7 @@ func Patch(config Config, gitDir string, targetDir string) {
 	// Check there are changes
 	if len(diff) == 0 {
 		fmt.Println("No changes detected.")
-		return
+		return true
 	}
 
 	// Display the changes
@@ -62,7 +62,7 @@ func Patch(config Config, gitDir string, targetDir string) {
 		// Dump patch to target dir
 		var data = []byte(diff)
 		var err = os.WriteFile(targetDir+"/patch.txt", data, 0664)
-		interaction.HandleError(err)
+		interaction.HandleError(err, true)
 	}
 
 	// Update list of tracked files
@@ -74,8 +74,10 @@ func Patch(config Config, gitDir string, targetDir string) {
 		}
 		return nil
 	})
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	// Write tracked files to target dir's roller.yaml
 	UpdateTrackedFiles(targetDir, trackedFiles, config)
+
+	return true
 }

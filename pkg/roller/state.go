@@ -19,10 +19,10 @@ func ReadState(dir string) State {
 	_, err := os.Stat(dir + "/.roller.state")
 	if !errors.Is(err, os.ErrNotExist) {
 		file, err := os.ReadFile(dir + "/" + StateFileName)
-		interaction.HandleError(err)
+		interaction.HandleError(err, true)
 
 		err = yaml.Unmarshal(file, &state)
-		interaction.HandleError(err)
+		interaction.HandleError(err, true)
 	}
 
 	return state
@@ -30,8 +30,8 @@ func ReadState(dir string) State {
 
 func WriteState(dir string, state State) {
 	data, err := yaml.Marshal(state)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	err = os.WriteFile(dir+"/"+StateFileName, data, 0664)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 }

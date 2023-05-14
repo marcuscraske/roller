@@ -2,6 +2,6 @@ package command
 
 import "roller/pkg/roller"
 
-func CommandUpdate() {
-	roller.Update()
+func CommandUpdate() bool {
+	return roller.Update()
 }

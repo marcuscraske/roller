@@ -13,11 +13,11 @@ type Action struct {
 
 func ExecuteAction(actionName string) bool {
 	var targetDir, err = os.Getwd()
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	// Read config and check the action exists
 	var config, err2 = ReadConfig(targetDir)
-	interaction.HandleError(err2)
+	interaction.HandleError(err2, true)
 
 	var action, exists = config.Actions[actionName]
 	if !exists {
@@ -34,9 +34,10 @@ func ExecuteAction(actionName string) bool {
 	var workingDir = action.WorkingDir
 	if len(workingDir) == 0 {
 		workingDir, err = os.Getwd()
-		interaction.HandleError(err)
+		interaction.HandleError(err, true)
 	}
 
-	interaction.LaunchInteractiveProcess(workingDir, name, args...)
+	err = interaction.LaunchInteractiveProcess(workingDir, name, args...)
+	interaction.HandleError(err, false)
 	return true
 }

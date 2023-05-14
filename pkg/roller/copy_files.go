@@ -33,12 +33,12 @@ func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir str
 		} else {
 			// Create the folder...
 			err = os.MkdirAll(oldChangesTmpDirPath, os.ModePerm)
-			interaction.HandleError(err)
+			interaction.HandleError(err, true)
 		}
 
 		return nil
 	})
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	// Ensure tracked files in old project are copied across
 	// TODO handle files deleted from template and ensure it's applied to consumer
@@ -48,15 +48,15 @@ func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir str
 
 func CopyFile(src string, dest string) {
 	srcFile, err := os.Open(src)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 	defer srcFile.Close()
 
 	newFile, err := os.Create(dest)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 	defer newFile.Close()
 
 	_, err = io.Copy(newFile, srcFile)
-	interaction.HandleError(err)
+	interaction.HandleError(err, true)
 
 	fmt.Printf("Copied file, src=%s, dest=%s\n", src, dest)
 }
