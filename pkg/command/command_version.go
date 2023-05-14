@@ -1,8 +1,14 @@
 package command
 
-import "fmt"
+import (
+	"fmt"
+)
+
+var BuildVersion = "dev"
+var BuildDate = "none"
 
 func CommandVersion() bool {
-	fmt.Println("1.0.0")
+	fmt.Printf("Version: %s\n", BuildVersion)
+	fmt.Printf("Built:   %s\n", BuildDate)
 	return true
 }
