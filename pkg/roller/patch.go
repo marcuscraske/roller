@@ -14,7 +14,7 @@ func Patch(config Config, gitDir string, targetDir string) {
 	newChangesTmpDir := CreateTmpDirAndCopyTrackedFiles(config, gitDir, gitDir)
 
 	// Apply templating to newChangesTmpDir
-	TemplatingApply(newChangesTmpDir, config)
+	ApplyTemplating(newChangesTmpDir, config)
 
 	// Copy tracked files from target dir to oldChangesTmpDir
 	oldChangesTmpDirPath := CreateTmpDirAndCopyTrackedFiles(config, targetDir, newChangesTmpDir)
@@ -32,9 +32,6 @@ func Patch(config Config, gitDir string, targetDir string) {
 
 	// Generate diff
 	diff := git.Diff(oldChangesTmpDirPath, newChangesTmpDir)
-
-	// Check for deleted files (when tracked state exists), append to diff
-	// TODO...
 
 	// Check there are changes
 	if len(diff) == 0 {

@@ -9,7 +9,10 @@ import (
 func HandleError(err error) {
 	// TODO use panic(err) instead?
 	if err != nil {
+		// Dump the error
 		fmt.Printf("Failed due to unexpected error: %s", err)
+
+		// Hard exit with error-code...
 		os.Exit(1)
 	}
 }

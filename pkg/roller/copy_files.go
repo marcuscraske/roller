@@ -40,6 +40,9 @@ func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir str
 	})
 	interaction.HandleError(err)
 
+	// Ensure tracked files in old project are copied across
+	// TODO handle files deleted from template and ensure it's applied to consumer
+
 	return oldChangesTmpDirPath
 }
 

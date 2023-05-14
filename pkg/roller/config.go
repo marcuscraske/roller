@@ -44,6 +44,9 @@ func WriteConfig(dir string, config Config) {
 
 // MergeConfig merges template config with target config, and provides the merged config
 func MergeConfig(newConfig Config, oldConfig Config) Config {
-	// TODO check if vars changed. if so, prompt to edit. write config either way...
+	// TODO check config changed. if so, prompt to edit. write config either way...
+	// TODO Template.Vars
+	// TODO Template.Replace
+	// TODO Template.Ignore
 	return newConfig
 }
