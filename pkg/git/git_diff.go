@@ -37,6 +37,12 @@ func Diff(srcDir string, destDir string) string {
 	// Get the string output
 	var result = string(output)
 
+	// Check if there's no changes
+	var trimmed = strings.TrimSpace(result)
+	if len(trimmed) == 0 {
+		return ""
+	}
+
 	// Replace the paths in the diff, as they'll have the full paths rather than a/ and b/
 	result = strings.ReplaceAll(result, "old"+srcDir, "a")
 	result = strings.ReplaceAll(result, "new"+destDir, "b")

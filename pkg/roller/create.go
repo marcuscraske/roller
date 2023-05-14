@@ -13,7 +13,7 @@ func Create(gitUrl string) {
 	var targetDir, err = os.Getwd()
 
 	// Check roller config doesn't already exist in the current folder
-	_, err = os.Stat(targetDir + "/roller.yaml")
+	_, err = os.Stat(targetDir + "/" + ConfigFileName)
 	if !errors.Is(err, os.ErrNotExist) {
 		fmt.Println("roller.yaml detected in current directory, aborted!")
 		return
@@ -25,5 +25,5 @@ func Create(gitUrl string) {
 	interaction.HandleError(err2)
 
 	// Do the magic!
-	Patch(true, config, gitDir, targetDir)
+	Patch(config, gitDir, targetDir)
 }

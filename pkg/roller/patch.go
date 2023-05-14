@@ -8,7 +8,7 @@ import (
 	"roller/pkg/interaction"
 )
 
-func Patch(firstTime bool, config Config, gitDir string, targetDir string) {
+func Patch(config Config, gitDir string, targetDir string) {
 
 	// Copy tracked files from git clone to newChangesTmpDir
 	newChangesTmpDir := CreateTmpDirAndCopyTrackedFiles(config, gitDir, gitDir)
@@ -20,16 +20,27 @@ func Patch(firstTime bool, config Config, gitDir string, targetDir string) {
 	oldChangesTmpDirPath := CreateTmpDirAndCopyTrackedFiles(config, targetDir, newChangesTmpDir)
 	fmt.Println(oldChangesTmpDirPath)
 
-	// Copy roller file for first time only
-	if firstTime {
-		CopyFile(gitDir+"/roller.yaml", newChangesTmpDir+"/roller.yaml")
+	// Copy old config file if it exists
+	oldConfigPath := targetDir + "/" + ConfigFileName
+	_, err := os.Stat(oldConfigPath)
+	if err == nil {
+		CopyFile(oldConfigPath, oldChangesTmpDirPath+"/"+ConfigFileName)
 	}
+
+	// Write config changes to new changes
+	WriteConfig(newChangesTmpDir, config)
 
 	// Generate diff
 	diff := git.Diff(oldChangesTmpDirPath, newChangesTmpDir)
 
-	// Check for deleted files, append to diff
+	// Check for deleted files (when tracked state exists), append to diff
 	// TODO...
+
+	// Check there are changes
+	if len(diff) == 0 {
+		fmt.Println("No changes detected.")
+		return
+	}
 
 	// Display the changes
 	fmt.Println("Changes:")
@@ -53,7 +64,7 @@ func Patch(firstTime bool, config Config, gitDir string, targetDir string) {
 
 	// Update list of tracked files
 	var trackedFiles []string
-	err := filepath.Walk(newChangesTmpDir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(newChangesTmpDir, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			var relativePath = path[len(newChangesTmpDir)+1:]
 			trackedFiles = append(trackedFiles, relativePath)

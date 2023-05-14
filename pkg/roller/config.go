@@ -10,9 +10,10 @@ const ConfigFileName = "roller.yaml"
 
 type Config struct {
 	Template struct {
-		Repo   string            `json:"repo"`
-		Vars   map[string]string `json:"vars"`
-		Ignore []string          `json:"ignore"`
+		Repo    string            `json:"repo"`
+		Vars    map[string]string `json:"vars"`
+		Replace map[string]string `json:"replace"`
+		Ignore  []string          `json:"ignore"`
 	} `json:"template"`
 	Actions map[string]Action `json:"actions"`
 }
@@ -34,6 +35,14 @@ func ReadConfig(dir string) (config Config, err error) {
 	return config, nil
 }
 
+func WriteConfig(dir string, config Config) {
+	data, err := yaml.Marshal(config)
+	interaction.HandleError(err)
+	err = os.WriteFile(dir+"/"+ConfigFileName, data, 0664)
+	interaction.HandleError(err)
+}
+
+// MergeConfig merges template config with target config, and provides the merged config
 func MergeConfig(newConfig Config, oldConfig Config) Config {
 	// TODO check if vars changed. if so, prompt to edit. write config either way...
 	return newConfig

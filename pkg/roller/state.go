@@ -7,7 +7,7 @@ import (
 	"roller/pkg/interaction"
 )
 
-const StateFileName = ".roller.state"
+const StateFileName = ".roller.state.yaml"
 
 type State struct {
 	TrackedFiles []string `json:"tracked_files"`

@@ -1,13 +1,4 @@
-# Replicator
-
-## Naming
-rep
-replicator
-pave
-proad
-paved
-roller...winner!
-
+# Roller
 
 ## Commands
 Pull down initial template:
@@ -29,12 +20,14 @@ roller [action]
 Synchronises template changes with the provided target directory, useful when building and testing a template:
 
 ````
-roller sync <optional: target dir, defaults to 'output', relative to working dir>
+roller sync <optional: target dir, defaults to 'roller_output', relative to working dir>
 ````
 
 
 ## Files
 - `roller.yaml` - template configuration
+- `.roller.state.yaml` - tracks state changes (tracked files, used to detect deleted files)
+
 
 ## roller.yaml
 
