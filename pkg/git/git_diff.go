@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"os/exec"
 	"roller/pkg/interaction"
 	"strings"
@@ -24,8 +23,6 @@ func Diff(srcDir string, destDir string) string {
 		destDir)
 
 	process := exec.Command("git", args...)
-
-	fmt.Printf("%s, %s\n", srcDir, destDir)
 
 	output, err := process.Output()
 

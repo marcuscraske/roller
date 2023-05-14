@@ -9,6 +9,12 @@ import (
 )
 
 func Patch(config Config, gitDir string, targetDir string) {
+	// Check targetDir has no pending git changes
+	status := git.Status(targetDir)
+	if len(status) > 0 {
+		fmt.Println("Unable to proceed, git changes are pending - check git status!")
+		return
+	}
 
 	// Copy tracked files from git clone to newChangesTmpDir
 	newChangesTmpDir := CreateTmpDirAndCopyTrackedFiles(config, gitDir, gitDir)
