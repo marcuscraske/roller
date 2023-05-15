@@ -13,7 +13,7 @@ func MirrorTmpDirFilesFromTargetDir(config Config, targetDir string, tmpDir stri
 
 	fmt.Printf("Copying tracked files, outputDir=%s, tmpDir=%s, targetDir=%s\n", outputDir, tmpDir, targetDir)
 
-	// Copy files from targetDir that exist in tmpDir
+	// Copy files from targetDir that exist in tmpDir, to outputDir
 	err := filepath.Walk(tmpDir, func(tmpDirPath string, tmpDirInfo os.FileInfo, err error) error {
 		relativePath := tmpDirPath[len(tmpDir):]
 
@@ -30,7 +30,7 @@ func MirrorTmpDirFilesFromTargetDir(config Config, targetDir string, tmpDir stri
 			}
 		} else {
 			// Create the folder...
-			err = os.MkdirAll(outputDirPath, os.ModePerm)
+			err = os.MkdirAll(outputDirPath, tmpDirInfo.Mode())
 			interaction.HandleError(err, true)
 		}
 
@@ -55,6 +55,7 @@ func CopyTrackedFiles(targetDir string, tmpDir string) {
 			existsTmpDir := !os.IsNotExist(err)
 
 			if existsTargetDir && !existsTmpDir {
+				// TODO what if directory doesn't exist in tmpDirPath?
 				CopyFile(targetDirPath, tmpDirPath)
 			}
 		}
@@ -62,16 +63,36 @@ func CopyTrackedFiles(targetDir string, tmpDir string) {
 }
 
 func CopyFile(src string, dest string) {
+	// Read existing permissions
+	info, err := os.Stat(src)
+	interaction.HandleError(err, true)
+
+	// Open source file
 	srcFile, err := os.Open(src)
 	interaction.HandleError(err, true)
-	defer srcFile.Close()
+	defer func(srcFile *os.File) {
+		err := srcFile.Close()
+		if err != nil {
+			interaction.HandleError(err, true)
+		}
+	}(srcFile)
 
+	// Create destination file and copy contents from source
 	newFile, err := os.Create(dest)
 	interaction.HandleError(err, true)
-	defer newFile.Close()
+	defer func(newFile *os.File) {
+		err := newFile.Close()
+		if err != nil {
+			interaction.HandleError(err, true)
+		}
+	}(newFile)
 
 	_, err = io.Copy(newFile, srcFile)
 	interaction.HandleError(err, true)
 
-	fmt.Printf("Copied file, src=%s, dest=%s\n", src, dest)
+	// Set new file's permissions to match the source
+	err = os.Chmod(dest, info.Mode())
+	interaction.HandleError(err, true)
+
+	fmt.Printf("Copied file, src=%s, dest=%s, mode=%d\n", src, dest, info.Mode())
 }

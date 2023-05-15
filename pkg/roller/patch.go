@@ -30,7 +30,7 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 	MirrorTmpDirFilesFromTargetDir(config, gitDir, gitDir, newChangesTmpDir)
 
 	// Apply templating to newChangesTmpDir
-	ApplyTemplatingDir(newChangesTmpDir, config, templateContext)
+	ApplyTemplatingDir(newChangesTmpDir, config, templateContext, true)
 
 	// Copy tracked files from target dir to oldChangesTmpDir
 	oldChangesTmpDirPath := files.CreateTmpDir()

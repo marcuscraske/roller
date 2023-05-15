@@ -7,12 +7,12 @@ Paving the road, with the ability to create and update projects from a template 
 ## Commands
 Pull down initial template:
 ````
-roller create <git repo url>
+roller create <git repo url> <optional: git tag/branch, otherwise default branch>
 ````
 
 Update from template repo:
 ````
-roller update <optional: reference/version, otherwise uses default branch>
+roller update <optional: git tag/branch, otherwise uses default branch>
 ````
 
 Performs a user-defined action:

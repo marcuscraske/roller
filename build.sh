@@ -42,7 +42,7 @@ for key in ${ARCH[@]}; do
 
   ( \
     cd ${DIR}/bin && \
-    zip -j ${parts[0]}-${parts[1]}.zip ${DIR}/bin/${parts[0]}-${parts[1]}/${parts[2]} \
+    zip -j ${parts[0]}-${parts[1]}-${BUILD_VERSION}.zip ${DIR}/bin/${parts[0]}-${parts[1]}/${parts[2]} \
   )
 done
 

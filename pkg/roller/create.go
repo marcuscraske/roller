@@ -19,6 +19,9 @@ func Create(gitUrl string) bool {
 		return false
 	}
 
+	// Check whether git exists already, otherwise clone to new directory and skip patch process
+	// TODO...
+
 	// Perform the initial clone
 	var gitDir = git.Clone(gitUrl)
 	config, err := ReadConfig(gitDir)

@@ -7,7 +7,7 @@ import (
 )
 
 func LaunchInteractiveProcess(workingDir string, name string, arg ...string) (err error) {
-	fmt.Println("Launching vim for roller.yaml...")
+	fmt.Printf("Launching interactive process, name=%s, args=%s\n", name, arg)
 	process := exec.Command(name, arg...)
 	process.Dir = workingDir
 	stdin, err := process.StdinPipe()

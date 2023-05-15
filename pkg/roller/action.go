@@ -1,14 +1,16 @@
 package roller
 
 import (
+	"fmt"
 	"github.com/flosch/pongo2/v6"
 	"roller/pkg/interaction"
 	"strings"
 )
 
 type Action struct {
-	Shell      string `json:"shell"`
-	WorkingDir string `json:"working_dir"`
+	Shell       string `yaml:"shell"`
+	WorkingDir  string `yaml:"dir"`
+	IgnoreError bool   `yaml:"ignore"`
 }
 
 func ExecuteActionByName(defaultWorkingDir string, actionName string, templateContext pongo2.Context, config Config) bool {
@@ -30,7 +32,8 @@ func ExecuteAction(defaultWorkingDir string, action Action, templateContext pong
 
 	// Apply templating
 	shell := action.Shell
-	shell = ApplyTemplatingString(shell, templateContext, config)
+	shell, err := ApplyTemplatingString(shell, templateContext, config, false)
+	interaction.HandleError(err, true)
 
 	// Determine name and args
 	var parts = strings.Split(shell, " ")
@@ -47,7 +50,13 @@ func ExecuteAction(defaultWorkingDir string, action Action, templateContext pong
 	}
 
 	// Launch the process
-	err := interaction.LaunchInteractiveProcess(workingDir, name, args...)
-	interaction.HandleError(err, false)
+	err = interaction.LaunchInteractiveProcess(workingDir, name, args...)
+	if err != nil {
+		if !action.IgnoreError {
+			interaction.HandleError(err, false)
+		} else {
+			fmt.Printf("WARNING: failed to execute action - name=%s, args=%s, error=%s\n", name, args, err)
+		}
+	}
 	return true
 }
