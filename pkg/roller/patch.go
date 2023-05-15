@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"roller/pkg/files"
 	"roller/pkg/git"
 	"roller/pkg/interaction"
 )
@@ -19,18 +20,21 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 	// Setup template context
 	templateContext := CreateTemplateContext(config)
 
+	// Setup directory for new changes
+	newChangesTmpDir := files.CreateTmpDir()
+
 	// Execute pre-actions
-	// TODO fix...
-	//ExecuteActions(newChangesTmpDir, config.Template.Actions.Pre, templateContext, config)
+	ExecuteActions(newChangesTmpDir, config.Template.Actions.Pre, templateContext, config)
 
 	// Copy tracked files from git clone to newChangesTmpDir
-	newChangesTmpDir := CreateTmpDirAndCopyTrackedFiles(config, gitDir, gitDir)
+	MirrorTmpDirFilesFromTargetDir(config, gitDir, gitDir, newChangesTmpDir)
 
 	// Apply templating to newChangesTmpDir
 	ApplyTemplatingDir(newChangesTmpDir, config, templateContext)
 
 	// Copy tracked files from target dir to oldChangesTmpDir
-	oldChangesTmpDirPath := CreateTmpDirAndCopyTrackedFiles(config, targetDir, newChangesTmpDir)
+	oldChangesTmpDirPath := files.CreateTmpDir()
+	MirrorTmpDirFilesFromTargetDir(config, targetDir, newChangesTmpDir, oldChangesTmpDirPath)
 	fmt.Println(oldChangesTmpDirPath)
 
 	// Copy tracked files missed to old dir, these are files not present in the new changes i.e. deleted in new changes

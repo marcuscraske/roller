@@ -1,5 +1,5 @@
 # Roller
-TODO: IMAGE HERE OF A ROAD ROLLER
+<img src="roller.svg" />
 
 Paving the road, with the ability to create and update projects from a template repo.
 

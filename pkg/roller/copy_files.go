@@ -5,22 +5,20 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"roller/pkg/files"
 	"roller/pkg/interaction"
 )
 
-func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir string) string {
-	// Create "old" tmp dir to copy files that already exist in the target dir
-	oldChangesTmpDirPath := files.CreateTmpDir()
+// MirrorTmpDirFilesFromTargetDir copies files to outputDir from targetDir, where the same files exist in tmpDir
+func MirrorTmpDirFilesFromTargetDir(config Config, targetDir string, tmpDir string, outputDir string) {
 
-	fmt.Printf("Copying tracked files, oldChangesTmpDirPath=%s, tmpDir=%s, targetDir=%s\n", oldChangesTmpDirPath, tmpDir, targetDir)
+	fmt.Printf("Copying tracked files, outputDir=%s, tmpDir=%s, targetDir=%s\n", outputDir, tmpDir, targetDir)
 
 	// Copy files from targetDir that exist in tmpDir
 	err := filepath.Walk(tmpDir, func(tmpDirPath string, tmpDirInfo os.FileInfo, err error) error {
 		relativePath := tmpDirPath[len(tmpDir):]
 
 		targetDirPath := targetDir + relativePath
-		oldChangesTmpDirPath := oldChangesTmpDirPath + relativePath
+		outputDirPath := outputDir + relativePath
 
 		if IsIgnoredFile(config, relativePath) {
 			fmt.Println("Ignored file: " + relativePath)
@@ -28,19 +26,17 @@ func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir str
 			// Copy the file if it exists in the target dir and it's a file
 			targetDirInfo, err := os.Stat(targetDirPath)
 			if !os.IsNotExist(err) && !targetDirInfo.IsDir() {
-				CopyFile(targetDirPath, oldChangesTmpDirPath)
+				CopyFile(targetDirPath, outputDirPath)
 			}
 		} else {
 			// Create the folder...
-			err = os.MkdirAll(oldChangesTmpDirPath, os.ModePerm)
+			err = os.MkdirAll(outputDirPath, os.ModePerm)
 			interaction.HandleError(err, true)
 		}
 
 		return nil
 	})
 	interaction.HandleError(err, true)
-
-	return oldChangesTmpDirPath
 }
 
 func CopyTrackedFiles(targetDir string, tmpDir string) {
