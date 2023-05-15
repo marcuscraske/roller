@@ -17,10 +17,12 @@ if [[ -d ${DIR}/bin ]]; then
   echo "Deleted ${DIR}/bin"
 fi
 
-BUILD_VERSION=$(git rev-parse --short HEAD)
+BUILD_VERSION=$(git describe --tags --abbrev=0)
+BUILD_COMMIT=$(git rev-parse --short HEAD)
 BUILD_DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
 echo "Build Version: ${BUILD_VERSION}"
+echo "Build Commit:  ${BUILD_COMMIT}"
 echo "Build Date:    ${BUILD_DATE}"
 
 # Build each architecture
@@ -32,10 +34,16 @@ for key in ${ARCH[@]}; do
     -ldflags \
     " \
       -X 'roller/pkg/command.BuildVersion=${BUILD_VERSION}' \
+      -X 'roller/pkg/command.BuildCommit=${BUILD_COMMIT}' \
       -X 'roller/pkg/command.BuildDate=${BUILD_DATE}' \
     " \
     -o ${DIR}/bin/${parts[0]}-${parts[1]}/${parts[2]} \
     cmd/main.go
+
+  ( \
+    cd ${DIR}/bin && \
+    zip -j ${parts[0]}-${parts[1]}.zip ${DIR}/bin/${parts[0]}-${parts[1]}/${parts[2]} \
+  )
 done
 
 echo "Finished!"
