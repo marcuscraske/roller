@@ -40,10 +40,29 @@ func CreateTmpDirAndCopyTrackedFiles(config Config, targetDir string, tmpDir str
 	})
 	interaction.HandleError(err, true)
 
-	// Ensure tracked files in old project are copied across
-	// TODO handle files deleted from template and ensure it's applied to consumer
-
 	return oldChangesTmpDirPath
+}
+
+func CopyTrackedFiles(targetDir string, tmpDir string) {
+	// Ensure tracked files in old project are copied across
+	state, err := ReadState(targetDir)
+	if err == nil {
+		for _, relativePath := range state.TrackedFiles {
+			targetDirPath := targetDir + "/" + relativePath
+			tmpDirPath := tmpDir + "/" + relativePath
+
+			// Check the file exists at the target dir, and then copy it
+			_, err := os.Stat(targetDirPath)
+			existsTargetDir := !os.IsNotExist(err)
+
+			_, err = os.Stat(tmpDirPath)
+			existsTmpDir := !os.IsNotExist(err)
+
+			if existsTargetDir && !existsTmpDir {
+				CopyFile(targetDirPath, tmpDirPath)
+			}
+		}
+	}
 }
 
 func CopyFile(src string, dest string) {

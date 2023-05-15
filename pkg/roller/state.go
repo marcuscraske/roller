@@ -13,19 +13,21 @@ type State struct {
 	TrackedFiles []string `json:"tracked_files"`
 }
 
-func ReadState(dir string) State {
-	state := State{}
-
-	_, err := os.Stat(dir + "/.roller.state")
+func ReadState(dir string) (state State, err error) {
+	_, err = os.Stat(dir + "/.roller.state.yaml")
 	if !errors.Is(err, os.ErrNotExist) {
 		file, err := os.ReadFile(dir + "/" + StateFileName)
-		interaction.HandleError(err, true)
+		if err != nil {
+			return state, err
+		}
 
 		err = yaml.Unmarshal(file, &state)
-		interaction.HandleError(err, true)
+		if err != nil {
+			return state, err
+		}
 	}
 
-	return state
+	return state, nil
 }
 
 func WriteState(dir string, state State) {

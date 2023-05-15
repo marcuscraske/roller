@@ -7,13 +7,14 @@ import (
 	"strings"
 )
 
-func Patch(patch string) {
+func Patch(workingDirectory string, patch string) {
 	var args []string
 	args = append(args,
 		"apply", "-3",
 	)
 
 	process := exec.Command("git", args...)
+	process.Dir = workingDirectory
 
 	// Prepare stdin later for pushing the patch data
 	process.Stdin = strings.NewReader(patch)

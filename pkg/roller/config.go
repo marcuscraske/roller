@@ -3,6 +3,7 @@ package roller
 import (
 	"gopkg.in/yaml.v3"
 	"os"
+	"reflect"
 	"roller/pkg/interaction"
 )
 
@@ -14,6 +15,10 @@ type Config struct {
 		Vars    map[string]string `json:"vars"`
 		Replace map[string]string `json:"replace"`
 		Ignore  []string          `json:"ignore"`
+		Actions struct {
+			Pre  []Action `json:"pre"`
+			Post []Action `json:"post"`
+		} `json:"actions"`
 	} `json:"template"`
 	Actions map[string]Action `json:"actions"`
 }
@@ -44,9 +49,54 @@ func WriteConfig(dir string, config Config) {
 
 // MergeConfig merges template config with target config, and provides the merged config
 func MergeConfig(newConfig Config, oldConfig Config) Config {
-	// TODO check config changed. if so, prompt to edit. write config either way...
-	// TODO Template.Vars
-	// TODO Template.Replace
-	// TODO Template.Ignore
-	return newConfig
+	result := newConfig
+
+	isVarsSame := reflect.DeepEqual(newConfig.Template.Vars, oldConfig.Template.Vars)
+	if !isVarsSame {
+		result.Template.Vars = mergeStrMap(newConfig.Template.Vars, oldConfig.Template.Vars)
+	}
+
+	isReplaceSame := reflect.DeepEqual(newConfig.Template.Replace, oldConfig.Template.Replace)
+	if !isReplaceSame {
+		result.Template.Vars = mergeStrMap(newConfig.Template.Replace, oldConfig.Template.Replace)
+	}
+
+	isIgnoreSame := reflect.DeepEqual(newConfig.Template.Ignore, oldConfig.Template.Ignore)
+	if !isIgnoreSame {
+		result.Template.Ignore = mergeStrArray(newConfig.Template.Ignore, oldConfig.Template.Ignore)
+	}
+
+	return result
+}
+
+func mergeStrMap(new map[string]string, old map[string]string) map[string]string {
+	result := map[string]string{}
+	// Append all the new items
+	for key, value := range new {
+		result[key] = value
+	}
+	// Append/overwrite the old items
+	for key, value := range old {
+		result[key] = value
+	}
+	return result
+}
+
+func mergeStrArray(new []string, old []string) []string {
+	var result []string
+	keys := map[string]bool{}
+	// Append all the new items
+	for _, item := range new {
+		result = append(result, item)
+		keys[item] = true
+	}
+	// Append all the old items, providing they're not duplicates / already exist
+	for _, item := range old {
+		_, ok := keys[item]
+		if !ok {
+			keys[item] = true
+			result = append(result, item)
+		}
+	}
+	return result
 }

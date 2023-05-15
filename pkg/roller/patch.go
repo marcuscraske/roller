@@ -16,15 +16,25 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 		return false
 	}
 
+	// Setup template context
+	templateContext := CreateTemplateContext(config)
+
+	// Execute pre-actions
+	// TODO fix...
+	//ExecuteActions(newChangesTmpDir, config.Template.Actions.Pre, templateContext, config)
+
 	// Copy tracked files from git clone to newChangesTmpDir
 	newChangesTmpDir := CreateTmpDirAndCopyTrackedFiles(config, gitDir, gitDir)
 
 	// Apply templating to newChangesTmpDir
-	ApplyTemplating(newChangesTmpDir, config)
+	ApplyTemplatingDir(newChangesTmpDir, config, templateContext)
 
 	// Copy tracked files from target dir to oldChangesTmpDir
 	oldChangesTmpDirPath := CreateTmpDirAndCopyTrackedFiles(config, targetDir, newChangesTmpDir)
 	fmt.Println(oldChangesTmpDirPath)
+
+	// Copy tracked files missed to old dir, these are files not present in the new changes i.e. deleted in new changes
+	CopyTrackedFiles(targetDir, oldChangesTmpDirPath)
 
 	// Copy old config file if it exists
 	oldConfigPath := targetDir + "/" + ConfigFileName
@@ -35,6 +45,9 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 
 	// Write config changes to new changes
 	WriteConfig(newChangesTmpDir, config)
+
+	// Apply post actions
+	ExecuteActions(newChangesTmpDir, config.Template.Actions.Post, templateContext, config)
 
 	// Generate diff
 	diff := git.Diff(oldChangesTmpDirPath, newChangesTmpDir)
@@ -57,7 +70,7 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 	switch answer {
 	case "y":
 		// Apply patch
-		git.Patch(diff)
+		git.Patch(targetDir, diff)
 	case "d":
 		// Dump patch to target dir
 		var data = []byte(diff)

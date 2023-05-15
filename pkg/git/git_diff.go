@@ -23,6 +23,8 @@ func Diff(srcDir string, destDir string) string {
 		srcDir,
 		destDir)
 
+	fmt.Printf("Executing git diff, src=%s, dest=%s\n", srcDir, destDir)
+
 	process := exec.Command("git", args...)
 
 	output, err := process.Output()
@@ -46,6 +48,10 @@ func Diff(srcDir string, destDir string) string {
 	result = strings.ReplaceAll(result, "old"+srcDir, "a")
 	result = strings.ReplaceAll(result, "new"+destDir, "b")
 	result = strings.ReplaceAll(result, "old"+destDir, "b")
+
+	// -- Full paths, present in renames
+	result = strings.ReplaceAll(result, srcDir+"/", "")
+	result = strings.ReplaceAll(result, destDir+"/", "")
 
 	return result
 }
