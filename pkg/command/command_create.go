@@ -1,12 +1,12 @@
 package command
 
 import (
-	"os"
 	"roller/pkg/roller"
 )
 
 func CommandCreate() bool {
-	// TODO validate URL
-	var gitUrl = os.Args[2]
-	return roller.Create(gitUrl)
+	args := ParseArgs()
+	var gitUrl = args["2"]
+	var gitReference = args["3"]
+	return roller.Create(gitUrl, gitReference)
 }

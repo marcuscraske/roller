@@ -105,11 +105,13 @@ func mergeStrMap(new map[string]string, old map[string]string) map[string]string
 func mergeStrArray(new []string, old []string) []string {
 	var result []string
 	keys := map[string]bool{}
+
 	// Append all the new items
 	for _, item := range new {
 		result = append(result, item)
 		keys[item] = true
 	}
+
 	// Append all the old items, providing they're not duplicates / already exist
 	for _, item := range old {
 		_, ok := keys[item]
@@ -118,5 +120,6 @@ func mergeStrArray(new []string, old []string) []string {
 			result = append(result, item)
 		}
 	}
+
 	return result
 }

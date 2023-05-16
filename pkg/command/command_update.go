@@ -3,5 +3,7 @@ package command
 import "roller/pkg/roller"
 
 func CommandUpdate() bool {
-	return roller.Update()
+	args := ParseArgs()
+	gitReference := args["2"]
+	return roller.Update(gitReference)
 }

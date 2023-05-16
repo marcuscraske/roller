@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"roller/pkg/interaction"
 )
@@ -55,11 +56,33 @@ func CopyTrackedFiles(targetDir string, tmpDir string) {
 			existsTmpDir := !os.IsNotExist(err)
 
 			if existsTargetDir && !existsTmpDir {
-				// TODO what if directory doesn't exist in tmpDirPath?
+				err = createParentDirIfNotExist(targetDirPath, targetDirPath)
+				interaction.HandleError(err, true)
+
 				CopyFile(targetDirPath, tmpDirPath)
 			}
 		}
 	}
+}
+
+// CreateParentDirIfNotExist Used to ensure the parent/containing directory for the given path exists, otherwise it's created
+func createParentDirIfNotExist(filePath string, mirrorPath string) (err error) {
+	// Check whether the parent folder exists
+	dir := path.Dir(filePath)
+	_, err = os.Stat(dir)
+	if os.IsNotExist(err) {
+
+		// Fetch the file permissions of the mirror file
+		mirrorDir := path.Dir(mirrorPath)
+		mirrorDirInfo, err := os.Stat(mirrorDir)
+		if err != nil {
+			return err
+		}
+
+		err = os.MkdirAll(dir, mirrorDirInfo.Mode())
+		return err
+	}
+	return nil
 }
 
 func CopyFile(src string, dest string) {

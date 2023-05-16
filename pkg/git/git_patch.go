@@ -24,9 +24,9 @@ func Patch(workingDirectory string, patch string) {
 	var result = string(output)
 	fmt.Println(result)
 
-	// Git diff will give 0 for no changes and 1 for changes; thus ignore exit codes 0 and 1
-	if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() > 1 {
-		fmt.Printf("Running git apply failed, exitCode=%d\n", exitError.ExitCode())
+	// Check patch applied successfully
+	if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() > 0 {
+		fmt.Printf("Running git apply failed, try dumping and manually applying the patch - exitCode=%d\n", exitError.ExitCode())
 		interaction.HandleError(err, false)
 	}
 

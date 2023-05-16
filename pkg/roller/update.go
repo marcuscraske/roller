@@ -8,7 +8,7 @@ import (
 	"roller/pkg/interaction"
 )
 
-func Update() bool {
+func Update(gitReference string) bool {
 	// Get working directory as target directory
 	targetDir, err := os.Getwd()
 	interaction.HandleError(err, true)
@@ -25,7 +25,7 @@ func Update() bool {
 	interaction.HandleError(err, true)
 
 	var gitUrl = config.Template.Repo
-	var gitDir = git.Clone(gitUrl)
+	var gitDir = git.Clone(gitUrl, gitReference)
 
 	// Read the new config and merge it
 	newConfig, err := ReadConfig(gitDir)

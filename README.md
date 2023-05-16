@@ -10,6 +10,9 @@ Pull down initial template:
 roller create <git repo url> <optional: git tag/branch, otherwise default branch>
 ````
 
+_Note: you can run this in an existing git working tree, and it will clone into the current directory. Otherwise, the
+template is cloned as per normal git clone._
+
 Update from template repo:
 ````
 roller update <optional: git tag/branch, otherwise uses default branch>

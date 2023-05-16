@@ -11,7 +11,11 @@ import (
 
 func Patch(config Config, gitDir string, targetDir string) bool {
 	// Check targetDir has no pending git changes
-	status := git.Status(targetDir)
+	status, err := git.Status(targetDir)
+	if err != nil {
+		fmt.Println("The current working directory must be a git repository, run git init if this is a new directory!")
+		interaction.HandleError(err, false)
+	}
 	if len(status) > 0 {
 		fmt.Println("Unable to proceed, git changes are pending - check git status!")
 		return false
@@ -42,7 +46,7 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 
 	// Copy old config file if it exists
 	oldConfigPath := targetDir + "/" + ConfigFileName
-	_, err := os.Stat(oldConfigPath)
+	_, err = os.Stat(oldConfigPath)
 	if err == nil {
 		CopyFile(oldConfigPath, oldChangesTmpDirPath+"/"+ConfigFileName)
 	}

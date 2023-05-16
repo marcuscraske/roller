@@ -34,7 +34,7 @@ func ApplyTemplatingDir(dir string, config Config, templateContext pongo2.Contex
 
 func ApplyTemplatingFile(path string, relativePath string, info os.FileInfo, config Config, templateContext pongo2.Context, applyReplace bool) error {
 	// Ignore roller.yaml
-	// TODO support excluded files from templating
+	// TODO support included/excluded files from templating
 	if relativePath == ConfigFileName {
 		return nil
 	}

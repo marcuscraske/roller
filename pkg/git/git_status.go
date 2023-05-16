@@ -8,13 +8,11 @@ import (
 	"strings"
 )
 
-func Status(dir string) string {
+func Status(dir string) (result string, err error) {
 	// Check git exists, otherwise return empty string
-	_, err := os.Stat(dir + "/.git")
+	_, err = os.Stat(dir + "/.git")
 	if os.IsNotExist(err) {
-		fmt.Println("The current working directory must be a git repository, run git init if this is a new directory!")
-		interaction.HandleError(err, false)
-		return "no git folder"
+		return "", err
 	}
 
 	// Run git status to check for the current changes
@@ -27,12 +25,12 @@ func Status(dir string) string {
 	}
 
 	// Get the string output
-	var result = string(output)
+	result = string(output)
 
 	// Check if there's no changes
 	var trimmed = strings.TrimSpace(result)
 	if len(trimmed) == 0 {
-		return ""
+		return "", nil
 	}
-	return result
+	return result, nil
 }
