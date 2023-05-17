@@ -100,8 +100,18 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 	})
 	interaction.HandleError(err, true)
 
-	// Write tracked files to target dir's roller.yaml
-	UpdateTrackedFiles(targetDir, trackedFiles, config)
+	// Update state
+	state, err := ReadState(targetDir)
+	interaction.HandleError(err, true)
 
+	// -- Tracked files
+	UpdateTrackedFiles(state, trackedFiles, config)
+
+	// -- Git reference pulled-down
+	gitReference, err := git.Reference(gitDir)
+	interaction.HandleError(err, true)
+	state.GitReference = gitReference
+
+	WriteState(targetDir, state)
 	return true
 }

@@ -10,7 +10,8 @@ import (
 const StateFileName = ".roller.state.yaml"
 
 type State struct {
-	TrackedFiles []string `json:"tracked_files"`
+	TrackedFiles []string `yaml:"tracked_files"`
+	GitReference string   `yaml:"git_reference"`
 }
 
 func ReadState(dir string) (state State, err error) {
