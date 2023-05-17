@@ -2,11 +2,10 @@ package interaction
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
-func PromptOrExit(acceptedParams ...string) string {
+func PromptOrBlank(acceptedParams ...string) string {
 	var answer string
 	fmt.Scanln(&answer)
 
@@ -17,8 +16,5 @@ func PromptOrExit(acceptedParams ...string) string {
 			return answer
 		}
 	}
-
-	fmt.Println("Aborted!")
-	os.Exit(1)
 	return ""
 }

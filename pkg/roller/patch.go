@@ -73,7 +73,7 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 	fmt.Println("***************************************************************")
 	fmt.Println("Apply? (y = apply, d = dump to 'patch.txt', n or anything else = abort)")
 
-	var answer = interaction.PromptOrExit("y", "d")
+	var answer = interaction.PromptOrBlank("y", "d")
 
 	switch answer {
 	case "y":
@@ -84,6 +84,9 @@ func Patch(config Config, gitDir string, targetDir string) bool {
 		var data = []byte(diff)
 		var err = os.WriteFile(targetDir+"/patch.txt", data, 0664)
 		interaction.HandleError(err, true)
+	default:
+		fmt.Println("Aborted!")
+		return false
 	}
 
 	// Update list of tracked files

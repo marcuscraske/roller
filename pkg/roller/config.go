@@ -28,6 +28,11 @@ type Config struct {
 	Actions map[string]Action `yaml:"actions"`
 }
 
+type MergedConfigResult struct {
+	config      Config
+	changedVars []string
+}
+
 // ReadConfig Read roller.yaml file.
 func ReadConfig(dir string) (config Config, err error) {
 	// Read file
@@ -54,24 +59,50 @@ func WriteConfig(dir string, config Config) {
 	interaction.HandleError(err, true)
 }
 
-// MergeConfig merges template config with target config, and provides the merged config
-func MergeConfig(newConfig Config, oldConfig Config) Config {
-	result := newConfig
+// MergeConfig merges template config with target config.
+func MergeConfig(newConfig Config, oldConfig Config) (result MergedConfigResult) {
+	mergedConfig := newConfig
 
 	isVarsSame := reflect.DeepEqual(newConfig.Template.Vars, oldConfig.Template.Vars)
 	if !isVarsSame {
-		result.Template.Vars = mergeVarMap(newConfig.Template.Vars, oldConfig.Template.Vars)
+		mergedVars := map[string]ConfigVar{}
+		newVarsMap := map[string]bool{}
+
+		// Append all the new items; also add all the keys to a map
+		for key, value := range newConfig.Template.Vars {
+			mergedVars[key] = value
+			newVarsMap[key] = true
+		}
+
+		// Append the old items (greater priority as project might have specific settings),
+		// also remove all the new keys
+		for key, value := range oldConfig.Template.Vars {
+			mergedVars[key] = value
+			delete(newVarsMap, key)
+		}
+
+		// Update list of actual new vars (not present in old)
+		var newVars []string
+		for key, _ := range newVarsMap {
+			newVars = append(newVars, key)
+		}
+
+		// Update result
+		mergedConfig.Template.Vars = mergeVarMap(newConfig.Template.Vars, oldConfig.Template.Vars)
+		result.changedVars = newVars
 	}
 
 	isReplaceSame := reflect.DeepEqual(newConfig.Template.Replace, oldConfig.Template.Replace)
 	if !isReplaceSame {
-		result.Template.Replace = mergeStrMap(newConfig.Template.Replace, oldConfig.Template.Replace)
+		mergedConfig.Template.Replace = mergeStrMap(newConfig.Template.Replace, oldConfig.Template.Replace)
 	}
 
 	isIgnoreSame := reflect.DeepEqual(newConfig.Template.Ignore, oldConfig.Template.Ignore)
 	if !isIgnoreSame {
-		result.Template.Ignore = mergeStrArray(newConfig.Template.Ignore, oldConfig.Template.Ignore)
+		mergedConfig.Template.Ignore = mergeStrArray(newConfig.Template.Ignore, oldConfig.Template.Ignore)
 	}
+
+	result.config = mergedConfig
 
 	return result
 }
@@ -82,7 +113,7 @@ func mergeVarMap(new map[string]ConfigVar, old map[string]ConfigVar) map[string]
 	for key, value := range new {
 		result[key] = value
 	}
-	// Append/overwrite the old items
+	// Append the old items
 	for key, value := range old {
 		result[key] = value
 	}

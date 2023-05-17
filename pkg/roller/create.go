@@ -21,22 +21,39 @@ func Create(gitUrl string, gitReference string) bool {
 	}
 
 	// Check whether git exists already, otherwise clone to new directory and skip patch process
+	var gitDir string
+
 	_, err = git.Status(targetDir)
 	if err != nil {
-		// Clone to a new folder, like a normal git clone
+		// Go to clone as if it's git clone (new sub-directory)
 		folderName := getRepoName(gitUrl)
-		gitDir := targetDir + "/" + folderName
-		git.CloneToDir(gitUrl, gitReference, gitDir)
+		gitDir = targetDir + "/" + folderName
+		_, err = git.Status(gitDir)
+		if err != nil {
+			git.CloneToDir(gitUrl, gitReference, gitDir)
+			targetDir = gitDir
+		} else {
+			fmt.Println("Unable to clone template, conflicting sub-directory exists at '" + folderName + "'")
+			fmt.Println("")
+			fmt.Println("Please cd into the directory '" + folderName + "', and run this again to apply to an existing git repo.")
+			return false
+		}
 	} else {
-		// Clone into the current directory and perform a patch
-		gitDir := git.Clone(gitUrl, gitReference)
-		config, err := ReadConfig(gitDir)
-		interaction.HandleError(err, true)
-
-		// Do the magic!
-		Patch(config, gitDir, targetDir)
+		// Clone into the current directory
+		gitDir = git.Clone(gitUrl, gitReference)
 	}
 
+	// Read config
+	config, err := ReadConfig(gitDir)
+	interaction.HandleError(err, true)
+
+	// Perform a survey
+	if !Survey(&config, nil, true) {
+		return false
+	}
+
+	// Do the magic!
+	Patch(config, gitDir, targetDir)
 	return true
 }
 

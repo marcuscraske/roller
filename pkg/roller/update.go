@@ -31,7 +31,13 @@ func Update(gitReference string) bool {
 	newConfig, err := ReadConfig(gitDir)
 	interaction.HandleError(err, true)
 
-	var mergedConfig = MergeConfig(newConfig, config)
+	mergeResult := MergeConfig(newConfig, config)
+	mergedConfig := mergeResult.config
+
+	// Perform a survey (abort if survey fails)
+	if !Survey(&mergedConfig, mergeResult.changedVars, false) {
+		return false
+	}
 
 	// Do the magic!
 	return Patch(mergedConfig, gitDir, targetDir)

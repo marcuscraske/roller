@@ -1,4 +1,4 @@
-package command
+package interaction
 
 import (
 	"os"
@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-// ParseArgs Returns a map of arguments.
+// ParseAppArgs Returns a map of arguments.
 //
 // Anything in the format of "--key=value" will be added to the map as key=value. If there's no = or/and value,
 // the value will be empty in the map.
 //
 // Anything not suffixed with "--" will be added to the map in ascending order e.g. "0", "1" etc. For example,
 // the args "foo bar" would be 0=foo, 1=bar.
-func ParseArgs() map[string]string {
+func ParseAppArgs() map[string]string {
 	result := map[string]string{}
 
 	// Find pairs of --key value, and use remaining items as args

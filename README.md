@@ -29,6 +29,10 @@ Synchronises template changes with the provided target directory, useful when bu
 roller sync <optional: target dir, defaults to 'roller_output', relative to working dir>
 ````
 
+Command-line options:
+- `--survey` - forces a survey, even if there's no new template variables
+- `--survey=skip` - skips the survey
+
 
 ## Support
 Please raise an issue, or use Discord TBD.

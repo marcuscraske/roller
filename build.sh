@@ -9,7 +9,10 @@ ARCH=(
   "windows,amd64,roller.exe"
 )
 
-echo "Starting..."
+echo "Cleaning dependencies..."
+go mod tidy
+
+echo "Starting build..."
 
 # Delete existing bin dir
 if [[ -d ${DIR}/bin ]]; then
