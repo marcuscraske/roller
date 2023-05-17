@@ -21,7 +21,7 @@ func Survey(config *Config, keyFilter []string, newSurvey bool) bool {
 	}
 
 	// Build the list of vars to be surveyed
-	var vars map[string]ConfigVar
+	vars := map[string]ConfigVar{}
 
 	if newSurvey || forcedSurvey {
 		vars = config.Template.Vars
@@ -71,6 +71,7 @@ func Survey(config *Config, keyFilter []string, newSurvey bool) bool {
 				}
 				return true
 			case "n":
+				fmt.Println("Aborted!")
 				return false
 			case "r":
 				askNext = false
@@ -94,8 +95,7 @@ func surveyVar(key string, value ConfigVar) (result ConfigVar) {
 	}
 	fmt.Printf("Value [default: %s]: ", value.Value)
 
-	var answer string
-	fmt.Scanln(&answer)
+	answer := interaction.PromptReadLine()
 
 	if len(answer) > 0 {
 		value.Value = answer

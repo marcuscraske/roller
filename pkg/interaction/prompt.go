@@ -1,14 +1,13 @@
 package interaction
 
 import (
-	"fmt"
+	"bufio"
+	"os"
 	"strings"
 )
 
 func PromptOrBlank(acceptedParams ...string) string {
-	var answer string
-	fmt.Scanln(&answer)
-
+	answer := PromptReadLine()
 	answer = strings.ToLower(answer)
 
 	for _, key := range acceptedParams {
@@ -17,4 +16,13 @@ func PromptOrBlank(acceptedParams ...string) string {
 		}
 	}
 	return ""
+}
+
+func PromptReadLine() string {
+	result := ""
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		result = scanner.Text()
+	}
+	return result
 }
